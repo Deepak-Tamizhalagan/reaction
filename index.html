@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reel Reaction Studio</title>
+
+  <style>
+    :root{
+      --bg1:#0b1020;
+      --bg2:#171a2b;
+      --text:#e9ecff;
+      --muted:#b9c0ffcc;
+      --btn:#ffffff;
+      --btnText:#0b1020;
+      --outline:#ffffff22;
+      --shadow: 0 20px 60px rgba(0,0,0,.45);
+      --radius: 22px;
+      --glow:#ff4fd855;
+      --glow2:#7c5cff55;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 15% 10%, var(--glow2), transparent 60%),
+        radial-gradient(900px 500px at 85% 20%, var(--glow), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+    }
+
+    .wrap{ width:min(880px, 100%); }
+
+    .card{
+      background: linear-gradient(180deg, #121834, #0f142a);
+      border:1px solid var(--outline);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 26px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .sparkle{
+      position:absolute;
+      inset:-40px;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at 20% 30%, #ffffff22 0 2px, transparent 3px),
+        radial-gradient(circle at 70% 40%, #ffffff1a 0 2px, transparent 3px),
+        radial-gradient(circle at 40% 80%, #ffffff1f 0 2px, transparent 3px),
+        radial-gradient(circle at 85% 75%, #ffffff14 0 2px, transparent 3px);
+      filter: blur(.2px);
+      opacity:.8;
+      animation: floaty 6s ease-in-out infinite;
+    }
+    @keyframes floaty{
+      0%,100%{ transform: translateY(0px); opacity:.75; }
+      50%{ transform: translateY(-10px); opacity:.9; }
+    }
+
+    .badge{
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+      padding: 10px 14px;
+      border:1px solid var(--outline);
+      border-radius: 999px;
+      background:#ffffff08;
+      color:var(--muted);
+      font-size: 13px;
+      letter-spacing:.2px;
+    }
+
+    h1{
+      margin:16px 0 10px;
+      font-size: clamp(26px, 4vw, 42px);
+      line-height:1.08;
+    }
+
+    .sub{
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 15.5px;
+      line-height: 1.5;
+      max-width: 74ch;
+    }
+
+    .dots{
+      display:flex;
+      gap:8px;
+      margin-top: 6px;
+      opacity:.9;
+    }
+    .dot{
+      width:8px;height:8px;border-radius:999px;
+      border:1px solid var(--outline);
+      background:#ffffff10;
+    }
+    .dot.active{ background:#ffffffcc; border-color:#ffffff66; }
+
+    .row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top: 14px;
+    }
+
+    button{
+      border:0;
+      cursor:pointer;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-weight: 800;
+      font-size: 15px;
+      transition: transform .08s ease, opacity .2s ease, box-shadow .2s ease;
+      user-select:none;
+      outline: none;
+    }
+    button:active{ transform: translateY(1px) scale(.99); }
+
+    .primary{
+      background: var(--btn);
+      color: var(--btnText);
+      flex: 1 1 240px;
+      box-shadow: 0 10px 24px rgba(255,255,255,.08);
+    }
+    .secondary{
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--outline);
+      flex: 1 1 240px;
+    }
+
+    .hint{
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .toast{
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--outline);
+      background: #ffffff08;
+      color: var(--text);
+      display:none;
+      transform: translateY(-6px);
+      opacity: 0;
+      transition: opacity .22s ease, transform .22s ease;
+    }
+    .toast.show{
+      display:block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .tiny{
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    .screen{ display:none; margin-top:14px; }
+    .screen.show{
+      display:block;
+      animation: pop .28s ease-out;
+    }
+    @keyframes pop{
+      from{ transform: translateY(10px); opacity:.2; }
+      to{ transform: translateY(0); opacity:1; }
+    }
+
+    .divider{
+      height:1px;
+      background: var(--outline);
+      margin: 18px 0;
+    }
+
+    .miniCard{
+      background:#0b1020aa;
+      border:1px solid var(--outline);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .shake{ animation: shake .35s ease-in-out; }
+    @keyframes shake{
+      0%,100%{ transform: translateX(0); }
+      20%{ transform: translateX(-6px); }
+      40%{ transform: translateX(6px); }
+      60%{ transform: translateX(-4px); }
+      80%{ transform: translateX(4px); }
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:14px;
+      margin-top: 12px;
+    }
+    @media (max-width: 720px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .tile{
+      border:1px solid var(--outline);
+      border-radius: 18px;
+      overflow:hidden;
+      background:#0b1020cc;
+      box-shadow: 0 12px 30px rgba(0,0,0,.25);
+    }
+
+    .mediaBox{
+      background:#000;
+      aspect-ratio: 4 / 3;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+
+    .mediaBox img,
+    .mediaBox video{
+      width:100%;
+      height:100%;
+      object-fit: contain;
+      display:block;
+      background:#000;
+    }
+
+    .tileBody{ padding: 12px 12px 14px; }
+
+    .cap{
+      margin:0 0 10px;
+      font-size: 15.5px;
+      line-height:1.35;
+    }
+
+    .pickBtn{
+      width:100%;
+      background:#ffffff;
+      color:#0b1020;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-weight: 900;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="wrap">
+    <section class="card" id="landing">
+      <div class="sparkle" aria-hidden="true"></div>
+
+      <span class="badge">🎬 Reel Reaction Studio <span style="opacity:.7">•</span> 4-Page interaction</span>
+
+      <h1>Welcome to Great Kirikalan Magic Show✨</h1>
+      <p class="sub">
+        This is a short, harmless, funny reaction page.
+        No serious business. Only vibes. Ready-aa?
+      </p>
+
+      <div class="dots" aria-label="progress">
+        <div class="dot active" title="Main"></div>
+        <div class="dot" title="Page 1"></div>
+        <div class="dot" title="Page 2"></div>
+        <div class="dot" title="Page 3"></div>
+        <div class="dot" title="Page 4"></div>
+        <div class="dot" title="Final"></div>
+      </div>
+
+      <div class="row">
+        <button class="primary" id="btnEnter">Aarambikalangala ✅</button>
+        <button class="secondary" id="btnNope">Maybe later 🙃</button>
+      </div>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+      <div class="hint">🧠 Tip: Total 4 pages keep selecting the best ones.</div>
+      <div class="tiny">Note: This page doesn’t collect data. It’s just a fun click-through.</div>
+
+      <div class="divider"></div>
+
+      <!-- PAGE 1 -->
+      <section class="screen" id="page1">
+        <div class="miniCard">
+          <b>📌 Page 1</b>
+          <h1 style="font-size: clamp(22px, 3.4vw, 34px); margin-top:10px;">
+            Vaalkai giving 360degree serupadi but enaku...soru thaan mukkiyam!
+          </h1>
+          <p class="sub" style="margin-top:6px;">
+            Indha page-la 4 moments iruku. Best select pannitu dha next page-ku poganum 😄
+          </p>
+
+          <div class="grid">
+            <div class="tile">
+              <div class="mediaBox">
+                <img src="assets/muttakannu.jpeg" alt="muttakannu" />
+              </div>
+              <div class="tileBody">
+                <p class="cap"><b>Inoru Ice Cream Parcel</b></p>
+                <button class="pickBtn" data-next="page2" data-reply="Ice cream parcel-aa? Serious ah 😭">✅</button>
+              </div>
+            </div>
+
+            <div class="tile">
+              <div class="mediaBox">
+                <video autoplay loop muted playsinline preload="auto">
+                  <source src="assets/soru.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="tileBody">
+                <p class="cap"><b>Apo enaku pasikumilla</b></p>
+                <button class="pickBtn" data-next="page2" data-reply="Pasikkudhu na… straight to shop dha 😭">✅</button>
+              </div>
+            </div>
+
+            <div class="tile">
+              <div class="mediaBox">
+                <video autoplay loop muted playsinline preload="auto">
+                  <source src="assets/pani.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="tileBody">
+                <p class="cap"><b>Soru dha mukkiyam</b></p>
+                <button class="pickBtn" data-next="page2" data-reply="Morattu combo 💯">✅</button>
+              </div>
+            </div>
+
+            <div class="tile">
+              <div class="mediaBox">
+                <video autoplay loop muted playsinline preload="auto">
+                  <source src="assets/food.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="tileBody">
+                <p class="cap"><b>If food has face</b></p>
+                <button class="pickBtn" data-next="page2" data-reply="Food face = mood face 😄">✅</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:16px;">
+            <button class="secondary" id="btnBack">← Back to main</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 2 -->
+      <section class="screen" id="page2">
+        <div class="miniCard">
+          <b>📌 Page 2</b>
+          <h1 style="font-size: clamp(22px, 3.4vw, 34px); margin-top:10px;">
+            Being goofy
+          </h1>
+          <p class="sub" style="margin-top:6px;">
+            Intha page-la 2 goofy moments iruku. Choose one and let’s roll 😄
+          </p>
+
+          <div class="grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+            <div class="tile">
+              <div class="mediaBox">
+                <video autoplay loop muted playsinline preload="auto">
+                  <source src="assets/ooditan.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="tileBody">
+                <p class="cap"><b>Ooditan ila</b></p>
+                <button class="pickBtn" data-next="page3" data-reply="Escape mode ON 😂">✅</button>
+              </div>
+            </div>
+
+            <div class="tile">
+              <div class="mediaBox">
+                <video autoplay loop muted playsinline preload="auto">
+                  <source src="assets/aaduvom.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="tileBody">
+                <p class="cap"><b>Aaduvom paru oru dance</b></p>
+                <button class="pickBtn" data-next="page3" data-reply="On Loop 🔥">✅</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:16px;">
+            <button class="secondary" id="btnBack2">← Back to Page 1</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 3 -->
+      <section class="screen" id="page3">
+        <div class="miniCard">
+          <b>📌 Page 3</b>
+          <h1 style="font-size: clamp(22px, 3.4vw, 34px); margin-top:10px;">
+            Caught Wildly 😵‍💫
+          </h1>
+          <p class="sub" style="margin-top:6px;">
+            Idhu konjam “wild” vibes 😄
+          </p>
+
+          <div class="grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+            <div class="tile">
+              <div class="mediaBox">
+                <video autoplay loop muted playsinline preload="auto">
+                  <source src="assets/siripu.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="tileBody">
+                <p class="cap"><b>Ena siripu kalukunnu</b></p>
+                <button class="pickBtn" data-next="page4" data-reply="SiriPPu level: unlimited 😂">✅</button>
+              </div>
+            </div>
+
+            <div class="tile">
+              <div class="mediaBox">
+                <video autoplay loop muted playsinline preload="auto">
+                  <source src="assets/step.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="tileBody">
+                <p class="cap"><b>Ena step podalam</b></p>
+                <button class="pickBtn" data-next="page4" data-reply="Step podra speed-ku salute 🫡">✅</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:16px;">
+            <button class="secondary" id="btnBack3">← Back to Page 2</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 4 -->
+      <section class="screen" id="page4">
+        <div class="miniCard">
+          <b>📌 Page 4</b>
+          <h1 style="font-size: clamp(22px, 3.4vw, 34px); margin-top:10px;">
+            Caught Cute & Pookie 🥹💗
+          </h1>
+          <p class="sub" style="margin-top:6px;">
+            Last round! Cuteness Overload 😄
+          </p>
+
+          <div class="grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+            <div class="tile">
+              <div class="mediaBox">
+                <img src="assets/pookie.jpeg" alt="pookie" />
+              </div>
+              <div class="tileBody">
+                <p class="cap"><b>Pookie vibes</b></p>
+                <button class="pickBtn" data-next="final" data-reply="Pookie pick = certified cute attack 🥹">✅</button>
+              </div>
+            </div>
+
+            <div class="tile">
+              <div class="mediaBox">
+                <img src="assets/cute.jpeg" alt="cute" />
+              </div>
+              <div class="tileBody">
+                <p class="cap"><b>Happy vibes</b></p>
+                <button class="pickBtn" data-next="final" data-reply="Cute-uh? Yes… very 😌✨">✅</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:16px;">
+            <button class="secondary" id="btnBack4">← Back to Page 3</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- FINAL (UPDATED) -->
+      <section class="screen" id="final">
+        <div class="miniCard">
+          <b>🎉 Final Verdict</b>
+
+          <h1 style="font-size: clamp(22px, 3.4vw, 34px); margin-top:10px;">
+            Smile test passed ✅
+          </h1>
+
+          <p class="sub" style="margin-top:6px;">
+            Reward: one follow-back? 😅
+            <br>
+            <span style="opacity:.8">No pressure… just asking 😄</span>
+          </p>
+
+          <div class="row" style="margin-top:18px;">
+            <button class="primary" id="btnDeal">Deal 🤝</button>
+            <button class="secondary" id="btnLater">Maybe later 🙃</button>
+          </div>
+
+          <div class="row" style="margin-top:12px;">
+            <button class="secondary" id="btnRestart">Restart Show 🔁</button>
+          </div>
+        </div>
+      </section>
+
+    </section>
+  </main>
+
+  <script>
+    const btnEnter = document.getElementById('btnEnter');
+    const btnNope  = document.getElementById('btnNope');
+    const toast    = document.getElementById('toast');
+    const landing  = document.getElementById('landing');
+
+    const page1    = document.getElementById('page1');
+    const page2    = document.getElementById('page2');
+    const page3    = document.getElementById('page3');
+    const page4    = document.getElementById('page4');
+    const finalScr = document.getElementById('final');
+
+    const btnBack  = document.getElementById('btnBack');
+    const btnBack2 = document.getElementById('btnBack2');
+    const btnBack3 = document.getElementById('btnBack3');
+    const btnBack4 = document.getElementById('btnBack4');
+
+    // final buttons
+    const btnDeal    = document.getElementById('btnDeal');
+    const btnLater   = document.getElementById('btnLater');
+    const btnRestart = document.getElementById('btnRestart');
+
+    let toastTimer = null;
+
+    const noMessages = [
+      "😜 Come on! Click ‘Aarambikalangala’… fun zone open.",
+      "🎩 Magic rule #1: ‘Maybe later’ is not allowed here 😄",
+      "✨ Kirikalan says: ‘Maybe later’ cancelled. Proceed please!"
+    ];
+
+    function showToast(message){
+      toast.textContent = message;
+      toast.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+
+    function kickStartVideos(container){
+      const vids = container.querySelectorAll('video');
+      vids.forEach(v => {
+        try {
+          v.muted = true;
+          v.playsInline = true;
+          v.currentTime = 0;
+          const p = v.play();
+          if (p && p.catch) p.catch(()=>{});
+        } catch(e) {}
+      });
+    }
+
+    btnNope.addEventListener('click', () => {
+      showToast(noMessages[Math.floor(Math.random() * noMessages.length)]);
+      landing.classList.remove('shake');
+      void landing.offsetWidth;
+      landing.classList.add('shake');
+
+      const old = btnEnter.textContent;
+      btnEnter.textContent = "Odavum Mudiyadhu Oliyavum Mudiyadhu ✅";
+      setTimeout(() => btnEnter.textContent = old, 1800);
+    });
+
+    btnEnter.addEventListener('click', () => {
+      toast.classList.remove('show');
+      page1.classList.add('show');
+      page1.scrollIntoView({behavior:'smooth', block:'start'});
+      kickStartVideos(page1);
+    });
+
+    btnBack.addEventListener('click', () => {
+      page1.classList.remove('show');
+      landing.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+
+    btnBack2.addEventListener('click', () => {
+      page2.classList.remove('show');
+      page1.classList.add('show');
+      page1.scrollIntoView({behavior:'smooth', block:'start'});
+      kickStartVideos(page1);
+    });
+
+    btnBack3.addEventListener('click', () => {
+      page3.classList.remove('show');
+      page2.classList.add('show');
+      page2.scrollIntoView({behavior:'smooth', block:'start'});
+      kickStartVideos(page2);
+    });
+
+    btnBack4.addEventListener('click', () => {
+      page4.classList.remove('show');
+      page3.classList.add('show');
+      page3.scrollIntoView({behavior:'smooth', block:'start'});
+      kickStartVideos(page3);
+    });
+
+    // Final page actions
+    if (btnDeal) {
+      btnDeal.addEventListener('click', () => {
+        showToast("Okayyy 😄 Opening Instagram...");
+        window.open("https://www.instagram.com/", "_blank");
+      });
+    }
+
+    if (btnLater) {
+      btnLater.addEventListener('click', () => {
+        showToast("Fair 😭 I’ll stay in pending-request mode.");
+      });
+    }
+
+    if (btnRestart) {
+      btnRestart.addEventListener('click', () => {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('show'));
+        landing.scrollIntoView({behavior:'smooth', block:'start'});
+      });
+    }
+
+    document.addEventListener('click', (e) => {
+      const pick = e.target.closest('button[data-next]');
+      if (!pick) return;
+
+      showToast(pick.getAttribute('data-reply') || "Noted ✅");
+
+      const nextId = pick.getAttribute('data-next');
+      const nextEl = document.getElementById(nextId);
+
+      setTimeout(() => {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('show'));
+        if (nextEl) {
+          nextEl.classList.add('show');
+          nextEl.scrollIntoView({behavior:'smooth', block:'start'});
+          kickStartVideos(nextEl);
+        }
+      }, 650);
+    });
+  </script>
+</body>
+</html>
